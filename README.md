@@ -42,27 +42,14 @@ This prototype uses public provider-level data and does not require patient-leve
 ## AI assistance disclosure
 ChatGPT assisted with planning, code drafting, test design, project documentation, and report drafting. The developer should run the application, review all code, execute tests, and revise the report to reflect observed behavior before submission.
 
-## Screenshots of the running application
-The screenshots below show the local app with synthetic demo data. The example values are illustrative and are not actual CMS hospital observations.
+## Screenshots
 
-### 1. Administrator dashboard — default view
-![Administrator dashboard default view](screenshots/01_admin_default_dashboard.jpg)
+The six screenshots are included in the downloadable project archive but have not yet been uploaded as binary image assets to this GitHub repository. The README image previews will be added once those binary files are pushed. The screenshots use synthetic demo data, not actual CMS hospital observations.
 
-### 2. Accessibility — high-contrast mode
-![Accessibility high-contrast mode](screenshots/02_accessibility_high_contrast.jpg)
-
-### 3. Simplified layout setting
-![Simplified layout setting](screenshots/03_simplified_layout.jpg)
-
-### 4. Analyst role — detailed data table
-![Analyst detailed data table](screenshots/04_analyst_detailed_table.jpg)
-
-These screenshots document observed UI states; the simplified-view behavior was subsequently clarified in the code to hide the detailed-table option.
-
-## Repository
-https://github.com/sudheera96/adaptive-healthcare-analytics
-
-## References
-- CMS Provider Data Catalog: https://data.cms.gov/provider-data/dataset/yv7e-xc69
-- Streamlit Session State documentation: https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state
-- scikit-learn pairwise metrics documentation: https://scikit-learn.org/stable/modules/metrics.html
+Expected files:
+- `screenshots/01_admin_default_dashboard.png`
+- `screenshots/02_accessibility_high_contrast.png`
+- `screenshots/03_simplified_layout.png`
+- `screenshots/04_analyst_detailed_table.png`
+- `screenshots/05_hospital_comparison.png`
+- `screenshots/06_measure_distribution.png`
