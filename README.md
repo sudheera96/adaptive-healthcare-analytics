@@ -212,7 +212,7 @@ The committed test log records **7 tests passing** for the tested data-cleaning 
 
 ## AI assistance disclosure
 
-ChatGPT assisted with project planning, code drafting, test design, README/documentation, and report drafting. The implementation uses scikit-learn TF-IDF and cosine similarity for content-based view recommendations; it does not call a generative AI model. The developer should review the code, run the application and tests, and ensure the submitted report accurately describes the final implementation and testing.
+ChatGPT assisted with project planning, code drafting, test design, README/documentation, and report drafting. The implementation uses scikit-learn TF-IDF and cosine similarity for content-based view recommendations; it does not call a generative AI model. 
 
 ## References
 
