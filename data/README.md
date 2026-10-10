@@ -1,0 +1,1 @@
+Place the official CMS Timely and Effective Care - Hospital CSV here as `cms_hospital_raw.csv` to load it automatically. The full dataset is intentionally not bundled in the repository. The app uses synthetic demo rows when no CSV is present. Dataset: https://data.cms.gov/provider-data/dataset/yv7e-xc69
