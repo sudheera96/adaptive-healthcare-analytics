@@ -1,55 +1,225 @@
 # Adaptive Healthcare Analytics
 
-A Streamlit educational prototype that explores CMS Timely and Effective Care hospital measures and adapts its workspace based on role, user-selected accessibility preferences, and in-session interaction history.
+**An AI-informed, adaptive healthcare analytics dashboard built with Streamlit, Python, pandas, Plotly, and scikit-learn.**
+
+This project demonstrates how an interface can adapt to the needs of different users while they explore hospital quality measures. The primary audiences are **hospital administrators** who need a high-level overview and **healthcare data analysts** who need more detailed records and exploratory views.
+
+> **Important data note:** The screenshots below use synthetic demonstration records. These examples are not actual CMS hospital observations. Upload the official CMS CSV to explore the real dataset.
+
+## Table of contents
+
+- [Project goals](#project-goals)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [How the adaptive behavior works](#how-the-adaptive-behavior-works)
+- [Data source and handling](#data-source-and-handling)
+- [Project structure](#project-structure)
+- [Run the application](#run-the-application)
+- [Run the tests](#run-the-tests)
+- [Limitations and privacy](#limitations-and-privacy)
+- [AI assistance disclosure](#ai-assistance-disclosure)
+- [References](#references)
+
+## Project goals
+
+The goal is to demonstrate an **adaptive user interface (AUI)** for healthcare analytics. Rather than presenting every user with exactly the same starting experience, the application uses the selected role, accessibility preferences, and in-session view selections to personalize navigation and recommendations.
+
+This is an educational prototype for human-computer interaction (HCI). It is not a clinical decision-support product.
 
 ## Features
-- Role-aware defaults for hospital administrators and healthcare data analysts.
-- User-controlled larger text, high contrast, and simplified layout.
-- Explainable content-based view recommendations using TF-IDF, cosine similarity, role context, and repeated view selections.
-- CMS CSV upload support and local CSV loading.
-- Numeric-score cleaning, filters, charts, detailed table, and filtered CSV download.
-- Synthetic demo data fallback clearly labeled as synthetic.
-- Unit tests for cleaning and adaptive recommendation logic.
 
-## Data source
-Centers for Medicare & Medicaid Services (CMS), *Timely and Effective Care - Hospital*, dataset identifier `yv7e-xc69`:
-https://data.cms.gov/provider-data/dataset/yv7e-xc69
+- **Role-aware experience:** choose Hospital Administrator or Healthcare Data Analyst.
+- **Adaptive view recommendations:** suggests relevant dashboard views based on role and the views selected during the current session.
+- **Accessibility preferences:** toggle larger text, high-contrast styling, and a simplified layout.
+- **Data exploration:** filter by state and measure category.
+- **Multiple views:** KPI summary, hospital comparison, state overview, measure trends when usable date data is present, detailed data table, and measure distribution.
+- **CSV support:** upload a CMS CSV from the sidebar or place it at `data/cms_hospital_raw.csv`.
+- **Data cleaning:** normalizes common CMS column names and converts numeric scores when possible while retaining the original score text.
+- **Export:** download the currently filtered records as CSV from the detailed data table.
+- **Transparency:** explains the adaptation logic and labels the synthetic-data fallback.
+- **Automated tests:** tests cover data cleaning and core adaptation logic.
 
-Scores may be numeric, categorical, or unavailable. Do not compare different measures as if they share a unit or direction.
+## Screenshots
 
-## Quick start (Windows PowerShell)
+The images below are stored in this repository under `screenshots/` and are embedded using relative paths so GitHub can render them in this README.
+
+### 1. Administrator dashboard — default view
+
+Shows the dashboard's summary metrics, role-specific recommendations, filters, and initial summary view.
+
+![Administrator dashboard default view](screenshots/01_admin_default_dashboard.png)
+
+### 2. High-contrast accessibility setting
+
+Shows the dashboard with high-contrast styling enabled.
+
+![High-contrast accessibility setting](screenshots/02_accessibility_high_contrast.png)
+
+### 3. Simplified layout
+
+Shows the simplified presentation setting, intended to reduce interface complexity.
+
+![Simplified layout](screenshots/03_simplified_layout.png)
+
+### 4. Healthcare analyst — detailed data table
+
+Shows the analyst-oriented detailed records and CSV export control.
+
+![Healthcare analyst detailed data table](screenshots/04_analyst_detailed_table.png)
+
+### 5. Hospital comparison
+
+Shows a comparison chart for one selected measure. Interpret scores only within the same measure and check the CMS definition and footnotes.
+
+![Hospital comparison chart](screenshots/05_hospital_comparison.png)
+
+### 6. Measure distribution
+
+Shows the distribution of numeric scores in the selected filtered records.
+
+![Measure distribution chart](screenshots/06_measure_distribution.png)
+
+*All screenshots currently demonstrate the synthetic demo dataset unless the data-source banner in the captured screen explicitly says otherwise.*
+
+## How the adaptive behavior works
+
+### Role adaptation
+
+The role selection changes the default recommended views:
+
+- **Hospital Administrator:** KPI summary, hospital comparison, and state overview.
+- **Healthcare Data Analyst:** measure trends, detailed data table, and measure distribution.
+
+### Interaction-based recommendations
+
+The application keeps a bounded history of selected view names in Streamlit session state. The recommender uses:
+
+1. **TF-IDF** to represent descriptions of the available dashboard views as text vectors.
+2. **Cosine similarity** to compare a role-and-history profile with available views.
+3. **Interaction frequency** to give additional weight to views repeatedly selected in the current session.
+4. **Role defaults** to keep recommendations relevant to the selected audience.
+
+This is a small, explainable content-based recommendation model. It is **not** a large language model, generative AI, or a clinically validated predictive model. The user can still manually select an available view.
+
+### Accessibility adaptation
+
+The sidebar offers three user-controlled settings:
+
+- **Larger text** increases text size.
+- **High-contrast mode** adds stronger contrast and borders.
+- **Simplified layout** removes the detailed-table option from the view selector to reduce the initial interface complexity.
+
+These settings are optional and do not infer a user's disability or health status.
+
+## Data source and handling
+
+The intended public dataset is the Centers for Medicare & Medicaid Services (CMS) **Timely and Effective Care - Hospital** dataset.
+
+- Dataset page: https://data.cms.gov/provider-data/dataset/yv7e-xc69
+- Data catalog: https://data.cms.gov/provider-data/
+
+To load the full dataset, download its CSV and either:
+- save it as `data/cms_hospital_raw.csv`, or
+- upload it using the sidebar file uploader.
+
+The complete CMS CSV is intentionally not included in this repository. When no CSV is found or uploaded, the application uses clearly labeled synthetic demonstration records so the interface can still be explored.
+
+CMS measures may have different units, meanings, directions, or categorical values. Do not compare unlike measures or interpret a higher numeric score as universally better. Review measure definitions, reporting periods, and footnotes.
+
+## Project structure
+
+```text
+adaptive-healthcare-analytics/
+├── app.py                         # Streamlit interface and dashboard views
+├── src/
+│   ├── adaptation.py               # Role-aware recommendations and layout logic
+│   └── data_utils.py               # CSV loading, normalization, and demo data
+├── tests/
+│   ├── test_adaptation.py          # Adaptation behavior tests
+│   └── test_data_utils.py          # Data cleaning tests
+├── data/
+│   └── README.md                   # Instructions for adding the CMS CSV locally
+├── screenshots/
+│   ├── 01_admin_default_dashboard.png
+│   ├── 02_accessibility_high_contrast.png
+│   ├── 03_simplified_layout.png
+│   ├── 04_analyst_detailed_table.png
+│   ├── 05_hospital_comparison.png
+│   └── 06_measure_distribution.png
+├── .streamlit/
+│   └── config.toml                 # Streamlit theme configuration
+├── requirements.txt
+├── TEST_RESULTS.txt
+├── SUBMISSION_CHECKLIST.md
+└── README.md
+```
+
+## Run the application
+
+### Requirements
+
+- Python 3.10 or later recommended
+- pip
+- Windows PowerShell, macOS Terminal, or a compatible shell
+
+### Windows PowerShell
+
+Clone the repository and move into the project folder:
+
 ```powershell
+git clone https://github.com/sudheera96/adaptive-healthcare-analytics.git
+cd adaptive-healthcare-analytics
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Use the full CMS dataset
-Place the downloaded CSV at `data/cms_hospital_raw.csv`, or upload a CSV from the sidebar. Do not commit a large data file unless the course requires it and licensing/privacy review permits it. If the full CSV is absent, the app uses synthetic demo rows; those rows are examples only, not actual hospital performance.
+Streamlit prints a local URL in the terminal; open that URL in your browser.
 
-## Run tests
-```powershell
+### macOS or Linux
+
+```bash
+git clone https://github.com/sudheera96/adaptive-healthcare-analytics.git
+cd adaptive-healthcare-analytics
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+streamlit run app.py
+```
+
+## Run the tests
+
+With the virtual environment activated, run:
+
+```bash
 python -m unittest discover -s tests -v
 ```
 
-## Adaptation design
-The recommendation component is a lightweight content-based model: TF-IDF vectors represent descriptions of available views, cosine similarity compares a profile built from the selected role and viewed topics with candidate views, and interaction frequency plus role defaults influence the ranking. This is not a generative AI system or a clinically validated model. Accessibility settings are user-directed, and the user can manually choose any available view. The simplified layout removes the densest detailed-table view from the view selector.
+The committed test log records **7 tests passing** for the tested data-cleaning and adaptation functions. Re-run the tests after making changes; the log is a snapshot and does not replace a fresh test run.
 
-## Privacy and safety
-This prototype uses public provider-level data and does not require patient-level data. It does not send interaction history to an external AI service or persist it beyond the Streamlit session. It is not a clinical decision-support system and must not be used to make clinical decisions.
+## Limitations and privacy
+
+- This is a classroom HCI/analytics prototype, not a clinical decision-support system.
+- The recommendations are for dashboard navigation, not for diagnosing patients, recommending treatments, or ranking hospitals clinically.
+- The fallback records are synthetic and must not be cited as real hospital performance.
+- Interaction history is kept in the current Streamlit session and is not sent to an external AI service by the recommendation component.
+- The app is designed for public provider-level data; do not upload patient-identifiable or otherwise sensitive data.
+- Accessibility controls provide a few user-selected options; they do not establish full WCAG conformance or replace accessibility testing with assistive technologies.
+- Confirm CMS column names and data definitions for the specific CSV release being used.
 
 ## AI assistance disclosure
-ChatGPT assisted with planning, code drafting, test design, project documentation, and report drafting. The developer should run the application, review all code, execute tests, and revise the report to reflect observed behavior before submission.
 
-## Screenshots
+ChatGPT assisted with project planning, code drafting, test design, README/documentation, and report drafting. The implementation uses scikit-learn TF-IDF and cosine similarity for content-based view recommendations; it does not call a generative AI model. The developer should review the code, run the application and tests, and ensure the submitted report accurately describes the final implementation and testing.
 
-The six screenshots are included in the downloadable project archive but have not yet been uploaded as binary image assets to this GitHub repository. The README image previews will be added once those binary files are pushed. The screenshots use synthetic demo data, not actual CMS hospital observations.
+## References
 
-Expected files:
-- `screenshots/01_admin_default_dashboard.png`
-- `screenshots/02_accessibility_high_contrast.png`
-- `screenshots/03_simplified_layout.png`
-- `screenshots/04_analyst_detailed_table.png`
-- `screenshots/05_hospital_comparison.png`
-- `screenshots/06_measure_distribution.png`
+Centers for Medicare & Medicaid Services. (n.d.). *Timely and Effective Care - Hospital*. CMS Provider Data Catalog. https://data.cms.gov/provider-data/dataset/yv7e-xc69
+
+scikit-learn developers. (n.d.). *Pairwise metrics, affinities, and kernels*. scikit-learn documentation. https://scikit-learn.org/stable/modules/metrics.html
+
+Streamlit. (n.d.). *Session State*. Streamlit documentation. https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state
+
+Streamlit. (n.d.). *Streamlit documentation*. https://docs.streamlit.io/
